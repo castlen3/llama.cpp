@@ -1,3 +1,4 @@
+// TurboPrefill VLM Validation v0.1.0
 #include "llama-context.h"
 
 #include "ggml.h"
@@ -1605,9 +1606,7 @@ int llama_context::decode(const llama_batch & batch_inp) {
 
     const llama_batch & batch = balloc->get_batch();
 
-    bool turboprefill_has_tokens = batch.token != nullptr;
     bool turboprefill_single_seq = true;
-    bool turboprefill_positions_contiguous = true;
 
     bool turboprefill_requested = false;
     const char * turboprefill_env = std::getenv("TURBOPREFILL");
@@ -1625,12 +1624,10 @@ int llama_context::decode(const llama_batch & batch_inp) {
             cparams.causal_attn &&
             cparams.pipeline_parallel &&
             model.split_mode() == LLAMA_SPLIT_MODE_LAYER &&
-            model.n_devices() > 1 &&
-            turboprefill_has_tokens;
+            model.n_devices() > 1;
 
     if (turboprefill_enabled) {
         const llama_seq_id seq0 = batch.seq_id[0][0];
-        const llama_pos    pos0 = batch.pos[0];
 
         for (uint32_t i = 0; i < n_tokens_all; ++i) {
             if (batch.n_seq_id[i] != 1 || batch.seq_id[i][0] != seq0) {
@@ -1639,16 +1636,9 @@ int llama_context::decode(const llama_batch & batch_inp) {
             }
         }
 
-        for (uint32_t i = 0; i < n_tokens_all; ++i) {
-            if (batch.pos[i] != pos0 + (llama_pos) i) {
-                turboprefill_positions_contiguous = false;
-                break;
-            }
-        }
-
         turboprefill_enabled =
-                turboprefill_single_seq &&
-                turboprefill_positions_contiguous;
+            turboprefill_single_seq;
+
     }
 
     turboprefill.begin_batch(turboprefill_enabled, n_tokens_all, cparams.n_ubatch);
