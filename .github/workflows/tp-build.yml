@@ -68,9 +68,11 @@ jobs:
         run: |
           mkdir -p dist
           copy build\bin\Release\llama-server.exe dist\
-          copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\cudart64_129.dll" dist\
-          copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\cublas64_12.dll" dist\
-          copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin\cublasLt64_12.dll" dist\
+          $bin = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin"
+          foreach ($dll in @("cudart64_12.dll","cudart64_129.dll","cublas64_12.dll","cublasLt64_12.dll")) {
+            $p = Join-Path $bin $dll
+            if (Test-Path $p) { copy $p dist\ }
+          }
           Get-ChildItem dist
 
       - name: Upload artifact
