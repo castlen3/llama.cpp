@@ -68,6 +68,12 @@ jobs:
         run: |
           mkdir -p dist
           copy build\bin\Release\llama-server.exe dist\
+          copy build\bin\Release\llama-server-impl.dll dist\
+          copy build\bin\Release\llama.dll dist\
+          copy build\bin\Release\ggml.dll dist\
+          copy build\bin\Release\ggml-base.dll dist\
+          copy build\bin\Release\ggml-cuda.dll dist\
+          copy build\bin\Release\*.dll dist\
           $bin = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin"
           foreach ($dll in @("cudart64_12.dll","cudart64_129.dll","cublas64_12.dll","cublasLt64_12.dll")) {
             $p = Join-Path $bin $dll
