@@ -59,7 +59,7 @@ jobs:
             -DGGML_BACKEND_DL=OFF ^
             -DGGML_CPU_ALL_VARIANTS=OFF ^
             -DGGML_CUDA=ON ^
-            -DCMAKE_CUDA_ARCHITECTURES=61-real;75-real;86-real;120a-real ^
+            -DCMAKE_CUDA_ARCHITECTURES=61-real;75-real;86-real;120-virtual ^
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j %NUMBER_OF_PROCESSORS% --target llama-server
 
